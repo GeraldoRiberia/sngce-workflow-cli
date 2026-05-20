@@ -12,7 +12,6 @@ def check_ssl(hostname: str, port: int = 443, timeout: int = 10) -> dict:
     hostname = hostname.replace("https://", "").replace("http://", "").rstrip("/")
     # Strip any path
     hostname = hostname.split("/")[0]
-
     result = {
         "hostname": hostname,
         "valid": False,

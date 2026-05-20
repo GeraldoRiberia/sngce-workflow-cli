@@ -33,7 +33,7 @@ def print_backend_result(label: str, result: dict):
 
 
 def print_ssl_result(label: str, result: dict):
-    console.print(f"\n[bold underline]{label} — SSL[/]")
+    console.print(f"\n[bold underline]{label} — SSL Certificate[/]")
 
     if result["error"]:
         console.print(f"  {_status_icon(False)} Error: [red]{result['error']}[/]")
@@ -71,6 +71,17 @@ def print_frontend_result(label: str, result: dict):
         console.print(f"  {_status_icon(False)} Out of sync  "
                       f"[red]deployed {deployed}[/] → [green]latest {latest}[/]")
 
+def print_vps_result(label: str, result: dict):
+    console.print(f"\n[bold underline]{label} — VPS Resource Usage[/]")
 
+    # if result["error"]:
+    #     console.print(f"  {_status_icon(False)} Error: [red]{result['error']}[/]")
+    #     return
+
+    disk = result.get("disk_usage", "N/A")
+    memory = result.get("memory_usage", "N/A")
+    nginx = result.get("nginx_status", "N/A")
+
+    console.print(f"\n[red]Disk Usage: [white]\n{disk}  \n\n[blue]Memory Usage: \n[white]{memory}  \n\n[yellow]Nginx: \n[white]{nginx}")
 def print_divider():
     console.print()
