@@ -35,8 +35,8 @@ python main.py
 # Backend checks only (health checks for backend URLs)
 python main.py --backend
 
-# Frontend checks only (frontend sync checks)
-python main.py --frontend
+# Repo sync checks  (Frontend + Backend Repo sync checks)
+python main.py --repo
 
 # SSL certificate expiry checks only
 python main.py --ssl
@@ -50,16 +50,13 @@ python main.py --watch 30
 # Watch only backend checks
 python main.py --backend --watch 30
 
-# Watch only frontend checks
-python main.py --frontend --watch 30
-
 # Custom config location
 python main.py --config /path/to/myconfig.json
 ```
 
 ### Notes
 - `--backend` runs backend health checks only.
-- `--frontend` runs frontend sync checks only.
+- `--repo` runs repo sync checks for frontend and backend.
 - `--ssl` runs SSL certificate expiry checks only for `frontend_url` entries.
 - `--vps-status` runs SSH-based VPS checks for servers with `ip_address` and `username`.
 - `-p/--password` is required when `--vps-status` is used.
