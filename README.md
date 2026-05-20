@@ -4,7 +4,7 @@ A CLI tool to check the health of Sngce Workflow across Hostinger VPS.
 
 It can validate:
 - Backend health endpoint reachability and response time
-- Frontend deployment sync by comparing deployed commit to GitHub
+- Frontend and Backend deployment sync by comparing deployed commit to GitHub
 - SSL certificate expiry for frontend URLs via `--ssl`
 - VPS resource usage via SSH (disk, memory, nginx status)
 
