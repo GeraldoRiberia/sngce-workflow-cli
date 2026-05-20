@@ -55,7 +55,7 @@ def print_ssl_result(label: str, result: dict):
     console.print(f"  {icon} [{color}]{days} days remaining[/]  [dim]expires {expires}[/]")
 
 
-def print_frontend_result(label: str, result: dict):
+def print_repo_result(label: str, result: dict):
     console.print(f"\n[bold underline]{label} — Repo Sync[/]")
 
     if result["error"]:

@@ -19,7 +19,7 @@ import time
 import sys
 
 from checker.backend import check_backend
-from checker.frontend import check_frontend_sync
+from checker.repo_check import check_repo_sync
 from checker.ssl_check import check_ssl
 import checker.display as display
 from checker.usage import usage
@@ -39,7 +39,7 @@ def load_config(path: str) -> dict:
         return json.load(f)
 
 
-def run_checks(config: dict, backend_only: bool = False, frontend_only: bool = False, vps_only: bool = False, ssl_only: bool = False, args=None):
+def run_checks(config: dict, backend_only: bool = False, repo_only: bool = False, vps_only: bool = False, ssl_only: bool = False, args=None):
     servers = config.get("servers", {})
     github_token = config.get("github_token")
 
@@ -52,23 +52,23 @@ def run_checks(config: dict, backend_only: bool = False, frontend_only: bool = F
             display.print_ssl_result("SSL", ssl_result)
 
         # --- Backend check ---
-        if not frontend_only and not vps_only and not ssl_only and "backend_url" in server:
+        if not repo_only and not vps_only and not ssl_only and "backend_url" in server:
             backend_result = check_backend(
                 url=server["backend_url"],
                 health_endpoint=server.get("health_endpoint", "/health"),
             )
             display.print_backend_result(label, backend_result)
 
-        # --- Frontend sync check ---
-        if not backend_only and not vps_only and not ssl_only and "frontend_url" in server:
-            frontend_result = check_frontend_sync(
-                frontend_url=server["frontend_url"],
+        # --- Repository sync check ---
+        if not backend_only and not vps_only and not ssl_only and ("frontend_url" in server or "backend_url" in server):
+            check_result = check_repo_sync(
+                url=server["frontend_url"] if "frontend_url" in server else server["backend_url"],
                 repo_name=config["github_repo"],
                 branch=config.get("github_branch", "main"),
-                version_endpoint=server.get("version_endpoint", "/meta.json"),
+                version_endpoint=server.get("version_endpoint", "/meta.json") if "frontend_url" in server else server.get("version_endpoint", "/version-backend"),
                 github_token=github_token,
             )
-            display.print_frontend_result(label, frontend_result)
+            display.print_repo_result(label, check_result)
         # --- VPS resource usage check ---
         if vps_only and "ip_address" in server and "username" in server:
             vps_result = usage(server,args )
@@ -83,7 +83,7 @@ def main():
     )
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Path to servers.json config")
     parser.add_argument("--backend", action="store_true", help="Run backend checks only")
-    parser.add_argument("--frontend", action="store_true", help="Run frontend checks only")
+    parser.add_argument("--repo", action="store_true", help="Run repository sync checks")
     parser.add_argument("--ssl", action="store_true", help="Run SSL checks only")
     parser.add_argument("--watch", type=int, metavar="SECONDS",
                         help="Re-run checks every N seconds (Ctrl+C to stop)")
@@ -100,12 +100,12 @@ def main():
         display.console.print(f"[dim]Watching — refreshing every {args.watch}s. Ctrl+C to stop.[/]\n")
         try:
             while True:
-                run_checks(config, backend_only=args.backend,ssl_only=args.ssl, frontend_only=args.frontend, vps_only=args.vps_status, args=args)
+                run_checks(config, backend_only=args.backend,ssl_only=args.ssl, repo_only=args.repo, vps_only=args.vps_status, args=args)
                 time.sleep(args.watch)
         except KeyboardInterrupt:
             display.console.print("\n[dim]Stopped.[/]")
     else:
-        run_checks(config, backend_only=args.backend, ssl_only=args.ssl, frontend_only=args.frontend, vps_only=args.vps_status, args=args)
+        run_checks(config, backend_only=args.backend, ssl_only=args.ssl, repo_only=args.repo, vps_only=args.vps_status, args=args)
 
 
 if __name__ == "__main__":

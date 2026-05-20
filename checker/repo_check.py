@@ -2,13 +2,13 @@ import requests
 from github import Github, GithubException
 
 
-def get_deployed_commit(frontend_url: str, version_endpoint: str = "/meta.json", timeout: int = 10) -> dict:
+def get_deployed_commit(url: str, version_endpoint: str = "/meta.json", timeout: int = 10) -> dict:
     """
     Fetches the deployed commit SHA from the frontend's version endpoint.
     Expects the endpoint to return JSON like: { "commit": "abc1234..." }
     Returns a dict with: commit, error
     """
-    full_url = frontend_url.rstrip("/") + version_endpoint
+    full_url = url.rstrip("/") + version_endpoint
     result = {"commit": None, "error": None}
 
     try:
@@ -55,8 +55,8 @@ def get_latest_repo_commit(repo_name: str, branch: str = "main", github_token: s
     return result
 
 
-def check_frontend_sync(
-    frontend_url: str,
+def check_repo_sync(
+    url: str,
     repo_name: str,
     branch: str = "main",
     version_endpoint: str = "/meta.json",
@@ -73,7 +73,7 @@ def check_frontend_sync(
         "error": None,
     }
 
-    deployed = get_deployed_commit(frontend_url, version_endpoint)
+    deployed = get_deployed_commit(url, version_endpoint)
     if deployed["error"]:
         result["error"] = f"Could not fetch deployed version: {deployed['error']}"
         return result
