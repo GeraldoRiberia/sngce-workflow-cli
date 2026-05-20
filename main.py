@@ -63,8 +63,8 @@ def run_checks(config: dict, backend_only: bool = False, frontend_only: bool = F
         if not backend_only and not vps_only and not ssl_only and "frontend_url" in server:
             frontend_result = check_frontend_sync(
                 frontend_url=server["frontend_url"],
-                repo_name=server["github_repo"],
-                branch=server.get("github_branch", "main"),
+                repo_name=config["github_repo"],
+                branch=config.get("github_branch", "main"),
                 version_endpoint=server.get("version_endpoint", "/meta.json"),
                 github_token=github_token,
             )

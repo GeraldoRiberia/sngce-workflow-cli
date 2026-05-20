@@ -46,8 +46,8 @@ def get_latest_repo_commit(repo_name: str, branch: str = "main", github_token: s
         repo = g.get_repo(repo_name)
         branch_obj = repo.get_branch(branch)
         result["commit"] = branch_obj.commit.sha
-
     except GithubException as e:
+        print(e)
         result["error"] = f"GitHub API error: {e.data.get('message', str(e))}"
     except Exception as e:
         result["error"] = str(e)
